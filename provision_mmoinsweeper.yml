@@ -9,6 +9,12 @@
     domain_name: "mmoinsweeper.top"
 
   tasks:
+    - name: Install unzip
+      apt:
+        name: unzip
+        state: present
+        update_cache: yes
+
     - name: Create mmoinsweeper user
       user:
         name: mmoinsweeper
