@@ -61,8 +61,48 @@
       args:
         creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
 
+    - name: Create directory for static content
+      file:
+        path: /var/www/{{ domain_name }}
+        state: directory
+        owner: mmoinsweeper
+        group: mmoinsweeper
+        mode: '0755'
+
+    - name: Copy static content
+      copy:
+        src: static/
+        dest: /var/www/{{ domain_name }}
+        owner: mmoinsweeper
+        group: mmoinsweeper
+        mode: '0644'
+
+    - name: Copy game binary
+      copy:
+        src: mmoinsweeper
+        dest: /usr/local/bin/mmoinsweeper
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Create systemd service file
+      template:
+        src: mmoinsweeper.service.j2
+        dest: /etc/systemd/system/mmoinsweeper.service
+      notify: Reload systemd
+
+    - name: Start and enable mmoinsweeper service
+      systemd:
+        name: mmoinsweeper
+        state: started
+        enabled: yes
+
   handlers:
     - name: Reload Nginx
       service:
         name: nginx
         state: reloaded
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
