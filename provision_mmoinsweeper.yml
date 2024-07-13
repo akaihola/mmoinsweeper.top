@@ -76,29 +76,30 @@
         dest: /etc/nginx/sites-available/{{ domain_name }}
       notify: Reload Nginx
 
-    - name: Create directory for static content
+    - name: Create directory for mmoinsweeper static content
       file:
-        path: /var/www/{{ domain_name }}
+        path: /var/www/mmoinsweeper.top
         state: directory
-        owner: mmoinsweeper
-        group: mmoinsweeper
+        owner: www-data
+        group: www-data
         mode: '0755'
 
-    - name: Copy static content
-      copy:
-        src: static/
-        dest: /var/www/{{ domain_name }}
-        owner: mmoinsweeper
-        group: mmoinsweeper
-        mode: '0644'
+    - name: Download and extract mmoinsweeper static content
+      unarchive:
+        src: https://github.com/akaihola/mmoinsweeper/releases/latest/download/mmoinsweeper-static-content.zip
+        dest: /var/www/mmoinsweeper.top
+        remote_src: yes
+        owner: www-data
+        group: www-data
+        mode: '0755'
 
-    - name: Copy game binary
-      copy:
-        src: mmoinsweeper
+    - name: Download latest mmoinsweeper binary
+      get_url:
+        url: https://github.com/akaihola/mmoinsweeper/releases/latest/download/mmoinsweeper
         dest: /usr/local/bin/mmoinsweeper
+        mode: '0755'
         owner: root
         group: root
-        mode: '0755'
 
     - name: Create systemd service file
       template:
