@@ -78,6 +78,11 @@ This playbook will:
    ```
    You'll be prompted to enter the vault password you created earlier.
 
+   Note: If you encounter an error related to the vault password, ensure that you've correctly created and populated the vault.yml file. You can edit the vault file using:
+   ```
+   ansible-vault edit vault.yml
+   ```
+
 8. When you're done, deactivate the virtual environment:
    ```
    deactivate
