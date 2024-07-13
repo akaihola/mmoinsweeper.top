@@ -30,11 +30,11 @@ This repository contains Ansible playbooks and roles for provisioning a game ser
 This playbook will:
 
 1. Set up the "mmoinsweeper" user account
-2. Install and configure Nginx
+2. Install and configure Nginx as a reverse proxy
 3. Set up Let's Encrypt for SSL/TLS certificates
 4. Deploy the game binary and static content
 5. Configure the game as a systemd service
-6. Set up Nginx as a reverse proxy for both static content and WebSocket traffic
+6. Set up Nginx to forward requests to the Warp application and handle HTTPS
 
 ## Usage
 
@@ -75,17 +75,18 @@ This playbook will:
      ```
    - On other systems, consult your package manager or install from source.
 
-6. Create an Ansible vault file to store the root password:
+6. Create an Ansible vault file to store the root password and Certbot email:
    ```
    ansible-vault create vault.yml
    ```
    This will open your default text editor. When prompted, enter a secure password for the vault.
 
-5. In the opened editor, add the root password to the vault file using this format:
+7. In the opened editor, add the root password and Certbot email to the vault file using this format:
    ```yaml
    vault_root_password: your_actual_root_password
+   certbot_email: your_email@example.com
    ```
-   Replace `your_actual_root_password` with the actual root password for the server.
+   Replace `your_actual_root_password` with the actual root password for the server and `your_email@example.com` with the email you want to use for Let's Encrypt notifications.
    Save and close the file when done.
 
    Note: If the editor doesn't open automatically, you may need to set the EDITOR environment variable:
@@ -94,9 +95,9 @@ This playbook will:
    ```
    Then run the `ansible-vault create vault.yml` command again.
 
-6. Update the `inventory.yml` file with the correct server IP if needed
+8. Update the `inventory.yml` file with the correct server IP if needed
 
-8. Run the playbook:
+9. Run the playbook:
     ```
     ansible-playbook -i inventory.yml provision_mmoinsweeper.yml --ask-vault-pass
     ```
@@ -107,10 +108,12 @@ This playbook will:
     ansible-vault edit vault.yml
     ```
 
-11. When you're done, deactivate the virtual environment:
-   ```
-   deactivate
-   ```
+10. When you're done, deactivate the virtual environment:
+    ```
+    deactivate
+    ```
+
+11. After the playbook runs successfully, your MMOInsweeper server should be accessible via HTTPS at https://mmoinsweeper.top
 
 ## Security Notes
 

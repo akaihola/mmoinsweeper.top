@@ -6,6 +6,7 @@
     - vault.yml
   vars:
     ansible_ssh_private_key_file: "~/.ssh/id_ed25519"
+    domain_name: "mmoinsweeper.top"
 
   tasks:
     - name: Create mmoinsweeper user
@@ -28,3 +29,40 @@
         regexp: '^%sudo'
         line: '%sudo ALL=(ALL) NOPASSWD: ALL'
         validate: '/usr/sbin/visudo -cf %s'
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Install Certbot and Nginx plugin
+      apt:
+        name:
+          - certbot
+          - python3-certbot-nginx
+        state: present
+
+    - name: Configure Nginx reverse proxy
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/sites-available/{{ domain_name }}
+      notify: Reload Nginx
+
+    - name: Enable Nginx site
+      file:
+        src: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-enabled/{{ domain_name }}
+        state: link
+      notify: Reload Nginx
+
+    - name: Obtain SSL certificate
+      command: certbot --nginx -d {{ domain_name }} --non-interactive --agree-tos --email {{ certbot_email }} --redirect
+      args:
+        creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
