@@ -5,6 +5,7 @@ After=network.target
 [Service]
 ExecStart=/usr/local/bin/mmoinsweeper --port 8080
 Restart=always
+RestartSec=5
 User=mmoinsweeper
 Group=mmoinsweeper
 Environment=RUST_LOG=info
