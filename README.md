@@ -38,12 +38,18 @@ This playbook will:
 
 ## Usage
 
-1. Create a Python virtual environment:
+1. Ensure you have an SSH key pair. If you don't, create one:
+   ```
+   ssh-keygen -t ed25519 -C "your_email@example.com"
+   ```
+   This will create a new SSH key pair in `~/.ssh/id_ed25519` (private key) and `~/.ssh/id_ed25519.pub` (public key).
+
+2. Create a Python virtual environment:
    ```
    python3 -m venv mmoinsweeper_env
    ```
 
-2. Activate the virtual environment:
+3. Activate the virtual environment:
    - On Linux or macOS:
      ```
      source mmoinsweeper_env/bin/activate
@@ -53,12 +59,12 @@ This playbook will:
      mmoinsweeper_env\Scripts\activate
      ```
 
-3. Install the required dependencies:
+4. Install the required dependencies:
    ```
    pip install -r requirements.txt
    ```
 
-4. Create an Ansible vault file to store the root password:
+5. Create an Ansible vault file to store the root password:
    ```
    ansible-vault create vault.yml
    ```
@@ -79,7 +85,12 @@ This playbook will:
 
 6. Update the `inventory.yml` file with the correct server IP if needed
 
-7. Run the playbook:
+8. Ensure your SSH public key is added to the server's authorized_keys file for the root user. If not, you can add it manually or use ssh-copy-id:
+   ```
+   ssh-copy-id -i ~/.ssh/id_ed25519.pub root@212.227.230.223
+   ```
+
+9. Run the playbook:
    ```
    ansible-playbook -i inventory.yml provision_mmoinsweeper.yml --ask-vault-pass
    ```
@@ -90,7 +101,7 @@ This playbook will:
    ansible-vault edit vault.yml
    ```
 
-8. When you're done, deactivate the virtual environment:
+10. When you're done, deactivate the virtual environment:
    ```
    deactivate
    ```
