@@ -36,22 +36,21 @@ server {
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
 
+    root /var/www/{{ domain_name }};
+
     location / {
-        root /var/www/{{ domain_name }};
         index index.html;
         try_files $uri $uri/ =404;
     }
 
     # Configuration for HTML files
     location ~* \.html$ {
-        root /var/www/{{ domain_name }};
         etag on;
         add_header Cache-Control "no-store, no-cache, must-revalidate";
     }
 
     # Configuration for other static assets
     location ~* \.(css|ico)$ {
-        root /var/www/{{ domain_name }};
         etag on;
         expires 1y;
         add_header Cache-Control "public, max-age=31536000";
@@ -60,7 +59,6 @@ server {
 
     # Configuration for .mjs files
     location ~* \.mjs$ {
-        root /var/www/{{ domain_name }};
         default_type application/javascript;
         etag on;
         expires 1y;
