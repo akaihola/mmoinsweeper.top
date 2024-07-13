@@ -49,9 +49,9 @@
         state: directory
         mode: '0755'
 
-    - name: Configure Nginx reverse proxy
+    - name: Configure Nginx for HTTP
       template:
-        src: nginx.conf.j2
+        src: nginx_http.conf.j2
         dest: /etc/nginx/sites-available/{{ domain_name }}
       notify: Reload Nginx
 
@@ -62,10 +62,19 @@
         state: link
       notify: Reload Nginx
 
+    - name: Reload Nginx to apply HTTP configuration
+      meta: flush_handlers
+
     - name: Obtain SSL certificate
-      command: certbot --nginx -d {{ domain_name }} --non-interactive --agree-tos --email {{ certbot_email }} --redirect
+      command: certbot certonly --webroot -w /var/www/certbot -d {{ domain_name }} --non-interactive --agree-tos --email {{ certbot_email }}
       args:
         creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+
+    - name: Configure Nginx for HTTPS
+      template:
+        src: nginx_https.conf.j2
+        dest: /etc/nginx/sites-available/{{ domain_name }}
+      notify: Reload Nginx
 
     - name: Create directory for static content
       file:
