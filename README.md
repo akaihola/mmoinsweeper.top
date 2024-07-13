@@ -53,9 +53,9 @@ This playbook will:
      mmoinsweeper_env\Scripts\activate
      ```
 
-3. Install Ansible:
+3. Install the required dependencies:
    ```
-   pip install ansible
+   pip install -r requirements.txt
    ```
 
 4. Create an Ansible vault file to store the root password:
