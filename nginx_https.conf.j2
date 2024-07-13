@@ -48,11 +48,6 @@ server {
         add_header Cache-Control "no-store, no-cache, must-revalidate";
     }
 
-    location = /index.html {
-        root /var/www/{{ domain_name }};
-        index index.html;
-    }
-
     # Configuration for other static assets
     location ~* \.(css|ico)$ {
         root /var/www/{{ domain_name }};
