@@ -48,7 +48,6 @@ server {
         location ~* \.html$ {
             etag on;
             add_header Cache-Control "no-store, no-cache, must-revalidate";
-            types { text/html html; }
         }
 
         # Configuration for other static assets
