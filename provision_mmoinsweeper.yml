@@ -116,7 +116,7 @@
     - name: Start and enable mmoinsweeper service
       systemd:
         name: mmoinsweeper
-        state: started
+        state: restarted
         enabled: yes
 
   handlers:
