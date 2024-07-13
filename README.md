@@ -53,20 +53,19 @@ This playbook will:
      mmoinsweeper_env\Scripts\activate
      ```
 
-3. Install Ansible and other required packages:
+3. Install the required packages:
    ```
-   pip install ansible
+   pip install -r requirements.txt
    ```
 
-4. Ensure you have Ansible installed on your local machine (should be done in step 3)
-5. Update the `inventory.yml` file with the correct server IP and SSH details
-6. Run the playbook:
+4. Update the `inventory.yml` file with the correct server IP and SSH details
+5. Run the playbook:
 
    ```
    ansible-playbook -i inventory.yml provision_mmoinsweeper.yml
    ```
 
-7. When you're done, deactivate the virtual environment:
+6. When you're done, deactivate the virtual environment:
    ```
    deactivate
    ```
