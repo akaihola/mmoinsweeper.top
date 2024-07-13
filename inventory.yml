@@ -1,0 +1,8 @@
+all:
+  hosts:
+    mmoinsweeper:
+      ansible_host: 212.227.230.223
+      ansible_user: root
+      ansible_ssh_pass: "{{ vault_root_password }}"
+      ansible_become: yes
+      ansible_become_method: sudo
