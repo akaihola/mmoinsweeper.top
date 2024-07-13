@@ -15,6 +15,9 @@ server {
     listen 443 ssl;
     server_name {{ domain_name }};
 
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
     ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
 
@@ -46,6 +49,7 @@ server {
         location ~* \.html$ {
             etag on;
             add_header Cache-Control "no-store, no-cache, must-revalidate";
+            types { text/html html; }
         }
 
         # Configuration for other static assets
