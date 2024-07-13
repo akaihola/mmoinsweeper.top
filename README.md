@@ -10,7 +10,7 @@ This repository contains Ansible playbooks and roles for provisioning a game ser
 ## Server Details
 
 - OS: Ubuntu 24.04
-- Hostname: mmoinsweeper.net
+- Hostname: mmoinsweeper.top
 - IP Address: 212.227.230.223
 - Initial Access: Root user with known password
 
