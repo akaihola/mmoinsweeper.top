@@ -96,12 +96,7 @@ This playbook will:
 
 6. Update the `inventory.yml` file with the correct server IP if needed
 
-8. Ensure your SSH public key is added to the server's authorized_keys file for the root user. If not, you can add it manually or use ssh-copy-id:
-   ```
-   ssh-copy-id -i ~/.ssh/id_ed25519.pub root@212.227.230.223
-   ```
-
-10. Run the playbook:
+8. Run the playbook:
     ```
     ansible-playbook -i inventory.yml provision_mmoinsweeper.yml --ask-vault-pass
     ```
