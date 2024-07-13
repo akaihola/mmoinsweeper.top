@@ -55,6 +55,7 @@ server {
 
     # Configuration for other static assets
     location ~* \.(css|ico)$ {
+        root /var/www/{{ domain_name }};
         etag on;
         expires 1y;
         add_header Cache-Control "public, max-age=31536000";
