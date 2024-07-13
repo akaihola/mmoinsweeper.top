@@ -62,10 +62,11 @@ This playbook will:
 5. Run the playbook:
 
    ```
-   ansible-playbook -i inventory.yml provision_mmoinsweeper.yml
+   ansible-playbook -i inventory.yml provision_mmoinsweeper.yml --ask-vault-pass
    ```
+   You'll be prompted to enter the vault password you created earlier.
 
-6. When you're done, deactivate the virtual environment:
+8. When you're done, deactivate the virtual environment:
    ```
    deactivate
    ```
