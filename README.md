@@ -62,13 +62,20 @@ This playbook will:
    ```
    ansible-vault create vault.yml
    ```
-   When prompted, enter a secure password for the vault.
+   This will open your default text editor. When prompted, enter a secure password for the vault.
 
-5. Add the root password to the vault file:
-   ```
+5. In the opened editor, add the root password to the vault file using this format:
+   ```yaml
    vault_root_password: your_actual_root_password
    ```
    Replace `your_actual_root_password` with the actual root password for the server.
+   Save and close the file when done.
+
+   Note: If the editor doesn't open automatically, you may need to set the EDITOR environment variable:
+   ```
+   export EDITOR=nano  # or vim, or your preferred editor
+   ```
+   Then run the `ansible-vault create vault.yml` command again.
 
 6. Update the `inventory.yml` file with the correct server IP if needed
 
