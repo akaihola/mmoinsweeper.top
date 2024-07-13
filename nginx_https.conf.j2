@@ -18,6 +18,9 @@ server {
     ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
 
+    access_log /var/log/nginx/mmoinsweeper_access.log;
+    error_log /var/log/nginx/mmoinsweeper_error.log debug;
+
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
     ssl_ciphers EECDH+AESGCM:EDH+AESGCM;
@@ -37,12 +40,21 @@ server {
         root /var/www/{{ domain_name }};
         index index.html;
         try_files $uri $uri/ =404;
+
+        if (!-e $request_filename) {
+            return 404;
+        }
     }
 
     # Configuration for HTML files
     location ~* \.html$ {
         etag on;
         add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
+    location = /index.html {
+        root /var/www/{{ domain_name }};
+        index index.html;
     }
 
     # Configuration for other static assets
