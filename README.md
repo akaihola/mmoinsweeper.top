@@ -64,7 +64,18 @@ This playbook will:
    pip install -r requirements.txt
    ```
 
-5. Create an Ansible vault file to store the root password:
+5. Install sshpass (required for initial root login):
+   - On Ubuntu/Debian:
+     ```
+     sudo apt-get install sshpass
+     ```
+   - On macOS (using Homebrew):
+     ```
+     brew install hudochenkov/sshpass/sshpass
+     ```
+   - On other systems, consult your package manager or install from source.
+
+6. Create an Ansible vault file to store the root password:
    ```
    ansible-vault create vault.yml
    ```
@@ -90,18 +101,18 @@ This playbook will:
    ssh-copy-id -i ~/.ssh/id_ed25519.pub root@212.227.230.223
    ```
 
-9. Run the playbook:
-   ```
-   ansible-playbook -i inventory.yml provision_mmoinsweeper.yml --ask-vault-pass
-   ```
-   You'll be prompted to enter the vault password you created earlier.
+10. Run the playbook:
+    ```
+    ansible-playbook -i inventory.yml provision_mmoinsweeper.yml --ask-vault-pass
+    ```
+    You'll be prompted to enter the vault password you created earlier.
 
-   Note: If you encounter an error related to the vault password, ensure that you've correctly created and populated the vault.yml file. You can edit the vault file using:
-   ```
-   ansible-vault edit vault.yml
-   ```
+    Note: If you encounter an error related to the vault password, ensure that you've correctly created and populated the vault.yml file. You can edit the vault file using:
+    ```
+    ansible-vault edit vault.yml
+    ```
 
-10. When you're done, deactivate the virtual environment:
+11. When you're done, deactivate the virtual environment:
    ```
    deactivate
    ```
