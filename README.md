@@ -53,14 +53,26 @@ This playbook will:
      mmoinsweeper_env\Scripts\activate
      ```
 
-3. Install the required packages:
+3. Install Ansible:
    ```
-   pip install -r requirements.txt
+   pip install ansible
    ```
 
-4. Update the `inventory.yml` file with the correct server IP and SSH details
-5. Run the playbook:
+4. Create an Ansible vault file to store the root password:
+   ```
+   ansible-vault create vault.yml
+   ```
+   When prompted, enter a secure password for the vault.
 
+5. Add the root password to the vault file:
+   ```
+   vault_root_password: your_actual_root_password
+   ```
+   Replace `your_actual_root_password` with the actual root password for the server.
+
+6. Update the `inventory.yml` file with the correct server IP if needed
+
+7. Run the playbook:
    ```
    ansible-playbook -i inventory.yml provision_mmoinsweeper.yml --ask-vault-pass
    ```
