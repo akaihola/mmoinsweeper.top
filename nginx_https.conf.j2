@@ -39,24 +39,28 @@ server {
         try_files $uri $uri/ =404;
     }
 
-    # Custom MIME type for .mjs files
-    types {
-        application/javascript mjs;
+    # Configuration for HTML files
+    location ~* \.html$ {
+        etag on;
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
     }
 
-    # Configuration for HTML files
-        location ~* \.html$ {
-            etag on;
-            add_header Cache-Control "no-store, no-cache, must-revalidate";
-        }
+    # Configuration for other static assets
+    location ~* \.(css|ico)$ {
+        etag on;
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000";
+        try_files $uri =404;
+    }
 
-        # Configuration for other static assets
-        location ~* \.(css|mjs|ico)$ {
-            etag on;
-            expires 1y;
-            add_header Cache-Control "public, max-age=31536000";
-            try_files $uri =404;
-        }
+    # Configuration for .mjs files
+    location ~* \.mjs$ {
+        default_type application/javascript;
+        etag on;
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000";
+        try_files $uri =404;
+    }
     }
 
     location /ws {
