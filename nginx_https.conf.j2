@@ -44,6 +44,7 @@ server {
 
     # Configuration for HTML files
     location ~* \.html$ {
+        root /var/www/{{ domain_name }};
         etag on;
         add_header Cache-Control "no-store, no-cache, must-revalidate";
     }
