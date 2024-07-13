@@ -1,0 +1,28 @@
+---
+- name: Provision MMOInsweeper Server
+  hosts: all
+  become: yes
+  vars_files:
+    - vault.yml
+
+  tasks:
+    - name: Create mmoinsweeper user
+      user:
+        name: mmoinsweeper
+        state: present
+        groups: sudo
+        shell: /bin/bash
+
+    - name: Set up authorized keys for mmoinsweeper user
+      authorized_key:
+        user: mmoinsweeper
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+    - name: Ensure sudo group has passwordless sudo
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%sudo'
+        line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+        validate: '/usr/sbin/visudo -cf %s'
