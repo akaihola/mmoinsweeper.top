@@ -1,0 +1,43 @@
+---
+- name: Initial Server Setup
+  hosts: all
+  become: yes
+  vars:
+    ansible_user: "{{ initial_user | default('root') }}"
+    ansible_password: "{{ initial_password }}"
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ansible_ssh_extra_args: '-o PubkeyAuthentication=no -o PasswordAuthentication=yes'
+
+  tasks:
+    - name: Ensure ansible user exists
+      user:
+        name: ansible
+        state: present
+        groups: sudo
+        shell: /bin/bash
+
+    - name: Set up authorized keys for ansible user
+      authorized_key:
+        user: ansible
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+    - name: Ensure ansible user has passwordless sudo
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^ansible ALL='
+        line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Update SSH configuration to disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+      notify: Restart SSH
+
+  handlers:
+    - name: Restart SSH
+      service:
+        name: ssh
+        state: restarted
