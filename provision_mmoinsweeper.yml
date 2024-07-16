@@ -29,6 +29,7 @@
         regexp: '^ansible ALL='
         line: 'ansible ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
+
     - name: Install unzip
       apt:
         name: unzip
