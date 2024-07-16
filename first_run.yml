@@ -3,8 +3,9 @@
   hosts: all
   become: yes
   vars:
-    ansible_user: "{{ initial_user | default('root') }}"
-    ansible_password: "{{ initial_password }}"
+    # Override inventory settings for initial setup
+    ansible_user: "root"
+    ansible_password: "{{ initial_root_password }}"
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     ansible_ssh_extra_args: '-o PubkeyAuthentication=no -o PasswordAuthentication=yes'
 
@@ -29,12 +30,12 @@
         line: 'ansible ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
 
-    - name: Update SSH configuration to disable root login
-      lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^PermitRootLogin'
-        line: 'PermitRootLogin no'
-      notify: Restart SSH
+#    - name: Update SSH configuration to disable root login
+#      lineinfile:
+#        path: /etc/ssh/sshd_config
+#        regexp: '^PermitRootLogin'
+#        line: 'PermitRootLogin no'
+#      notify: Restart SSH
 
   handlers:
     - name: Restart SSH
