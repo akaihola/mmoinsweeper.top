@@ -10,6 +10,25 @@
     domain_name: "mmoinsweeper.top"
 
   tasks:
+    - name: Ensure ansible user exists
+      user:
+        name: ansible
+        state: present
+        groups: sudo
+        shell: /bin/bash
+
+    - name: Set up authorized keys for ansible user
+      authorized_key:
+        user: ansible
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+    - name: Ensure ansible user has passwordless sudo
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^ansible ALL='
+        line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
     - name: Install unzip
       apt:
         name: unzip
