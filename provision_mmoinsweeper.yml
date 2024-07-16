@@ -9,6 +9,20 @@
     branch: ""
     domain_name: "mmoinsweeper.top"
 
+  pre_tasks:
+    - name: Create ansible user (if it doesn't exist)
+      user:
+        name: ansible
+        state: present
+        groups: sudo
+        shell: /bin/bash
+      become: yes
+      become_user: root
+      become_method: su
+      vars:
+        ansible_become_pass: "{{ initial_root_password }}"
+      ignore_errors: yes
+
   tasks:
     - name: Ensure ansible user exists
       user:
