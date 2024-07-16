@@ -9,20 +9,6 @@
     branch: ""
     domain_name: "mmoinsweeper.top"
 
-  pre_tasks:
-    - name: Create ansible user (if it doesn't exist)
-      user:
-        name: ansible
-        state: present
-        groups: sudo
-        shell: /bin/bash
-      become: yes
-      become_user: root
-      become_method: su
-      vars:
-        ansible_become_pass: "{{ initial_root_password }}"
-      ignore_errors: yes
-
   tasks:
     - name: Ensure ansible user exists
       user:
@@ -43,6 +29,16 @@
         regexp: '^ansible ALL='
         line: 'ansible ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
+
+    - name: Update SSH configuration to disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+      notify: Restart SSH
+
+    - name: Ensure SSH is restarted
+      meta: flush_handlers
 
     - name: Install unzip
       apt:
@@ -167,3 +163,8 @@
     - name: Reload systemd
       systemd:
         daemon_reload: yes
+
+    - name: Restart SSH
+      service:
+        name: ssh
+        state: restarted
