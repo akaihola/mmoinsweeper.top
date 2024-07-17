@@ -1,4 +1,8 @@
 ---
+
+# Run this playbook with the following command:
+# ansible-playbook -i inventory.yml first_run.yml --ask-vault-pass
+
 - name: Initial Server Setup
   hosts: all
   become: yes

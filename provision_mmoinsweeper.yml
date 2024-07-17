@@ -1,4 +1,11 @@
 ---
+
+# Make sure the `ansible` user has been created
+# by running the `first_run.yml` playbook once.
+#
+# Run this playbook with the following command:
+# ansible-playbook -i inventory.yml provision_mmoinsweeper.yml --ask-vault-pass
+
 - name: Provision MMOInsweeper Server
   hosts: all
   become: yes
