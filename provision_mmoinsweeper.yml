@@ -21,12 +21,13 @@
   tasks:
     - name: Install unzip, Nginx and Nginx certbot plugin
       apt:
-        - certbot
-        - nginx
-        - python3-certbot-nginx
-        - unzip
-      state: present
-      update_cache: yes
+        name:
+          - certbot
+          - nginx
+          - python3-certbot-nginx
+          - unzip
+        state: present
+        update_cache: yes
 
     - name: Create mmoinsweeper user
       user:
