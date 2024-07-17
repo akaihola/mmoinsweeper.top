@@ -15,6 +15,8 @@
     ansible_ssh_private_key_file: "~/.ssh/id_ed25519"
     branch: ""
     domain_name: "mmoinsweeper.top"
+    subdomain: "{{ branch }}{{ '' if branch == '' else '.' }}mmoinsweeper.top"
+    service_name: "mmoinsweeper{{ '' if branch == '' else '-' }}{{ branch }}"
 
   tasks:
     - name: Ensure ansible user exists
@@ -100,13 +102,13 @@
     - name: Configure Nginx for HTTP
       template:
         src: nginx_http.conf.j2
-        dest: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-available/{{ subdomain }}
       notify: Reload Nginx
 
     - name: Enable Nginx site
       file:
-        src: /etc/nginx/sites-available/{{ domain_name }}
-        dest: /etc/nginx/sites-enabled/{{ domain_name }}
+        src: /etc/nginx/sites-available/{{ subdomain }}
+        dest: /etc/nginx/sites-enabled/{{ subdomain }}
         state: link
       notify: Reload Nginx
 
@@ -114,19 +116,19 @@
       meta: flush_handlers
 
     - name: Obtain SSL certificate
-      command: certbot certonly --webroot -w /var/www/certbot -d {{ domain_name }} --non-interactive --agree-tos --email {{ certbot_email }}
+      command: certbot certonly --webroot -w /var/www/certbot -d {{ subdomain }} --non-interactive --agree-tos --email {{ certbot_email }}
       args:
-        creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+        creates: /etc/letsencrypt/live/{{ subdomain }}/fullchain.pem
 
     - name: Configure Nginx for HTTPS
       template:
         src: nginx_https.conf.j2
-        dest: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-available/{{ subdomain }}
       notify: Reload Nginx
 
     - name: Create directory for mmoinsweeper static content
       file:
-        path: /var/www/mmoinsweeper.top
+        path: "/var/www/{{ subdomain }}"
         state: directory
         owner: www-data
         group: www-data
@@ -135,7 +137,7 @@
     - name: Download and extract mmoinsweeper static content
       unarchive:
         src: https://github.com/akaihola/mmoinsweeper/releases/latest/download/mmoinsweeper-static-content.zip
-        dest: /var/www/mmoinsweeper.top
+        dest: "/var/www/{{ subdomain }}"
         remote_src: yes
         owner: www-data
         group: www-data
@@ -144,20 +146,20 @@
     - name: Download latest mmoinsweeper binary
       get_url:
         url: https://github.com/akaihola/mmoinsweeper/releases/latest/download/mmoinsweeper
-        dest: /usr/local/bin/mmoinsweeper
+        dest: /usr/local/bin/{{ service_name }}
         mode: '0755'
         owner: root
         group: root
 
     - name: Create systemd service file
       template:
-        src: mmoinsweeper.service.j2
+        src: "{{ service_name }}.service.j2"
         dest: /etc/systemd/system/mmoinsweeper.service
       notify: Reload systemd
 
     - name: Start and enable mmoinsweeper service
       systemd:
-        name: mmoinsweeper
+        name: "{{ service_name }}"
         state: restarted
         enabled: yes
 
