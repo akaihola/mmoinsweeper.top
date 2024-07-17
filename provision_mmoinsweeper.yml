@@ -36,10 +36,11 @@
         shell: /bin/bash
 
     - name: Set up authorized keys for mmoinsweeper user
+      # The private key should be copied to GitHub secrets so branch deployments can be uploaded to the server
       authorized_key:
         user: mmoinsweeper
         state: present
-        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+        key: "{{ lookup('file', '~/.ssh/id_mmoinsweeper.pub') }}"
 
     - name: Create Certbot webroot directory
       file:
