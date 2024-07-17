@@ -19,15 +19,14 @@
     service_name: "mmoinsweeper{{ '' if branch == '' else '-' }}{{ branch }}"
 
   tasks:
-    - name: Install unzip
+    - name: Install unzip, Nginx and Nginx certbot plugin
       apt:
-        name: unzip
-        state: present
-        update_cache: yes
-
-    - name: Debug SSH connection
-      debug:
-        msg: "Connecting with user: {{ ansible_user }}, using key: {{ ansible_ssh_private_key_file }}"
+        - certbot
+        - nginx
+        - python3-certbot-nginx
+        - unzip
+      state: present
+      update_cache: yes
 
     - name: Create mmoinsweeper user
       user:
@@ -49,19 +48,6 @@
         regexp: '^%sudo'
         line: '%sudo ALL=(ALL) NOPASSWD: ALL'
         validate: '/usr/sbin/visudo -cf %s'
-
-    - name: Install Nginx
-      apt:
-        name: nginx
-        state: present
-        update_cache: yes
-
-    - name: Install Certbot and Nginx plugin
-      apt:
-        name:
-          - certbot
-          - python3-certbot-nginx
-        state: present
 
     - name: Create Certbot webroot directory
       file:
