@@ -6,6 +6,8 @@
 - name: Initial Server Setup
   hosts: all
   become: yes
+  vars_files:
+    - vault.yml
   vars:
     # Override inventory settings for initial setup
     ansible_user: "root"
