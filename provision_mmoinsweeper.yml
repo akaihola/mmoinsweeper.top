@@ -114,7 +114,7 @@
     - name: Download latest mmoinsweeper binary
       when: branch == ""  # it's a release, download the binary relased by the GitHub workflow
       get_url:
-        url: "${gh_repo}/releases/latest/download/mmoinsweeper"
+        url: "{{ gh_repo }}/releases/latest/download/mmoinsweeper"
         dest: /usr/local/bin/{{ service_name }}  # /usr/local/bin/mmoinsweeper
         mode: '0755'
         owner: root
