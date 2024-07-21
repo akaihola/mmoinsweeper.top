@@ -102,7 +102,6 @@
         mode: '0755'
 
     - name: Download and extract mmoinsweeper static content
-      when: branch == ""  # it's a release
       ansible.builtin.unarchive:
         src: "{{ static_content_url }}"  # a release zip or a repo zip archive for a branch
         dest: "/var/www"
