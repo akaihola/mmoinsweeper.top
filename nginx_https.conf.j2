@@ -37,7 +37,7 @@ server {
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
 
-    root /var/www/{{ service_name }};  # `mmoinsweeper` or `mmoinswepeer-<branch>`
+    root /var/www/{{ service_name }}/public;  # `mmoinsweeper` or `mmoinswepeer-<branch>`
 
     location / {
         index index.html;
