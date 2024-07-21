@@ -69,6 +69,17 @@
     - name: Reload Nginx to apply HTTP configuration
       meta: flush_handlers
 
+    - name: Add DNS A record for subdomain
+      community.general.gandi_livedns:
+        api_key: "{{ gandi_token }}"
+        domain: "{{ domain_name }}"
+        record: "{{ subdomain }}"
+        type: "A"
+        ttl: 300
+        values:
+          - "{{ ansible_host }}"
+      delegate_to: localhost
+
     - name: Obtain SSL certificate
       command: certbot certonly --webroot -w /var/www/certbot -d {{ subdomain }} --non-interactive --agree-tos --email {{ certbot_email }}
       args:
