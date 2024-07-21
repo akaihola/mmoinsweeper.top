@@ -15,8 +15,8 @@ server {
     listen 443 ssl;
     server_name {{ subdomain }};  # `mmoinsweeper.top` or `<branch>.mmoinsweeper.top`
 
-    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{ subdomain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ subdomain }}/privkey.pem;
 
     # service_name is either `mmoinsweeper` or `mmoinswepeer-<branch>`
     access_log /var/log/nginx/{{ service_name }}_access.log;
