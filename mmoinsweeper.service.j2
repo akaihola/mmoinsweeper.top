@@ -3,7 +3,8 @@ Description=MMOInsweeper Game Server
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/mmoinsweeper --port 8080
+# service_name is either `mmoinsweeper` or `mmoinsweeper-<branch>`
+ExecStart=/usr/local/bin/{{ service_name }} --port 8080
 Restart=always
 RestartSec=5
 User=mmoinsweeper
