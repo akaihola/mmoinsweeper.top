@@ -67,12 +67,14 @@
         state: present
 
     - name: Configure Nginx for HTTP
+      tags: [ pr, certbot ]
       template:
         src: nginx_http.conf.j2
         dest: /etc/nginx/sites-available/{{ subdomain }}
       notify: Reload Nginx
 
     - name: Enable Nginx site
+      tags: [ pr, certbot ]
       file:
         src: /etc/nginx/sites-available/{{ subdomain }}
         dest: /etc/nginx/sites-enabled/{{ subdomain }}
@@ -80,20 +82,24 @@
       notify: Reload Nginx
 
     - name: Reload Nginx to apply HTTP configuration
+      tags: [ pr, certbot ]
       meta: flush_handlers
 
     - name: Obtain SSL certificate
+      tags: [ pr, certbot ]
       command: certbot certonly --webroot -w /var/www/certbot -d {{ subdomain }} --non-interactive --agree-tos --email {{ certbot_email }}
       args:
         creates: /etc/letsencrypt/live/{{ subdomain }}/fullchain.pem
 
     - name: Configure Nginx for HTTPS
+      tags: [ pr, certbot, nginx ]
       template:
         src: nginx_https.conf.j2
         dest: /etc/nginx/sites-available/{{ subdomain }}
       notify: Reload Nginx
 
     - name: Create directory for mmoinsweeper static content
+      tags: pr
       file:
         path: "/var/www/{{ service_name }}"  # /var/www/mmoinsweeper or /var/www/mmoinsweeper-<branch>
         state: directory
@@ -102,6 +108,7 @@
         mode: '0755'
 
     - name: Download and extract mmoinsweeper static content
+      tags: [ pr, release ]
       ansible.builtin.unarchive:
         src: "{{ static_content_url }}"  # a release zip or a repo zip archive for a branch
         dest: "/var/www"
@@ -112,6 +119,7 @@
         mode: '0755'
 
     - name: Download latest mmoinsweeper binary
+      tags: release
       when: branch == ""  # it's a release, download the binary relased by the GitHub workflow
       get_url:
         url: "{{ gh_repo }}/releases/latest/download/mmoinsweeper"
@@ -121,6 +129,7 @@
         group: root
 
     - name: Copy mmoinsweeper branch binary uploaded by GitHub workflow
+      tags: pr
       when: branch != ""  # it's a branch deployment, copy the binary uploaded by the GitHub workflow
       copy:
         src: /home/mmoinsweeper/{{ service_name }}  # /home/mmoinsweeper/mmoinsweeper-<branch>
@@ -131,12 +140,14 @@
         group: root
 
     - name: Create systemd service file
+      tags: pr
       template:
         src: "mmoinsweeper.service.j2"
         dest: /etc/systemd/system/{{ service_name }}.service
       notify: Reload systemd
 
     - name: Start and enable mmoinsweeper service
+      tags: [ pr, release ]
       systemd:
         name: "{{ service_name }}"
         state: restarted
