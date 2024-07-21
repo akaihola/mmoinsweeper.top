@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name {{ domain_name }};
+    server_name {{ subdomain }};  # `mmoinsweeper.top` or `<branch>.mmoinsweeper.top`
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -13,13 +13,14 @@ server {
 
 server {
     listen 443 ssl;
-    server_name {{ domain_name }};
+    server_name {{ subdomain }};  # `mmoinsweeper.top` or `<branch>.mmoinsweeper.top`
 
-    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{ subdomain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ subdomain }}/privkey.pem;
 
-    access_log /var/log/nginx/mmoinsweeper_access.log;
-    error_log /var/log/nginx/mmoinsweeper_error.log debug;
+    # service_name is either `mmoinsweeper` or `mmoinswepeer-<branch>`
+    access_log /var/log/nginx/{{ service_name }}_access.log;
+    error_log /var/log/nginx/{{ service_name }}_error.log debug;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
@@ -36,7 +37,7 @@ server {
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
 
-    root /var/www/{{ domain_name }};
+    root /var/www/{{ service_name }}/public;  # `mmoinsweeper` or `mmoinswepeer-<branch>`
 
     location / {
         index index.html;

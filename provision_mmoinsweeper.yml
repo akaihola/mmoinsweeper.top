@@ -17,6 +17,10 @@
     domain_name: "mmoinsweeper.top"
     subdomain: "{{ branch }}{{ '' if branch == '' else '.' }}mmoinsweeper.top"
     service_name: "mmoinsweeper{{ '' if branch == '' else '-' }}{{ branch }}"
+    gh_repo: "https://github.com/akaihola/mmoinsweeper"
+    release_static_content_path: "/releases/latest/download/mmoinsweeper-static-content.zip"  # only `public/`
+    pr_static_content_path: "/archive/refs/heads/{{ branch }}.zip"  # full repo archive
+    static_content_url: "{{ gh_repo }}/{{ release_static_content_path if branch == '' else pr_static_content_path }}"
 
   tasks:
     - name: Install unzip, Nginx and Nginx certbot plugin
@@ -49,6 +53,19 @@
         state: directory
         mode: '0755'
 
+    - name: Add DNS A record for subdomain
+      tags: pr
+      when: branch != ""
+      community.general.gandi_livedns:
+        personal_access_token: "{{ gandi_token }}"
+        domain: "{{ domain_name }}"
+        record: "{{ branch }}"
+        type: "A"
+        ttl: 300
+        values:
+          - "{{ ansible_host }}"
+        state: present
+
     - name: Configure Nginx for HTTP
       template:
         src: nginx_http.conf.j2
@@ -78,33 +95,45 @@
 
     - name: Create directory for mmoinsweeper static content
       file:
-        path: "/var/www/{{ subdomain }}"
+        path: "/var/www/{{ service_name }}"  # /var/www/mmoinsweeper or /var/www/mmoinsweeper-<branch>
         state: directory
         owner: www-data
         group: www-data
         mode: '0755'
 
     - name: Download and extract mmoinsweeper static content
-      unarchive:
-        src: https://github.com/akaihola/mmoinsweeper/releases/latest/download/mmoinsweeper-static-content.zip
-        dest: "/var/www/{{ subdomain }}"
+      ansible.builtin.unarchive:
+        src: "{{ static_content_url }}"  # a release zip or a repo zip archive for a branch
+        dest: "/var/www"
+        include: "{{ service_name }}/public/*"  # binary is obtained separately
         remote_src: yes
         owner: www-data
         group: www-data
         mode: '0755'
 
     - name: Download latest mmoinsweeper binary
+      when: branch == ""  # it's a release, download the binary relased by the GitHub workflow
       get_url:
-        url: https://github.com/akaihola/mmoinsweeper/releases/latest/download/mmoinsweeper
-        dest: /usr/local/bin/{{ service_name }}
+        url: "{{ gh_repo }}/releases/latest/download/mmoinsweeper"
+        dest: /usr/local/bin/{{ service_name }}  # /usr/local/bin/mmoinsweeper
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Copy mmoinsweeper branch binary uploaded by GitHub workflow
+      when: branch != ""  # it's a branch deployment, copy the binary uploaded by the GitHub workflow
+      copy:
+        src: /home/mmoinsweeper/{{ service_name }}  # /home/mmoinsweeper/mmoinsweeper-<branch>
+        remote_src: yes
+        dest: /usr/local/bin/{{ service_name }}  # /usr/local/bin/mmoinsweeper-<branch>
         mode: '0755'
         owner: root
         group: root
 
     - name: Create systemd service file
       template:
-        src: "{{ service_name }}.service.j2"
-        dest: /etc/systemd/system/mmoinsweeper.service
+        src: "mmoinsweeper.service.j2"
+        dest: /etc/systemd/system/{{ service_name }}.service
       notify: Reload systemd
 
     - name: Start and enable mmoinsweeper service
