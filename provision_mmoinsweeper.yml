@@ -124,6 +124,7 @@
       when: branch != ""  # it's a branch deployment, copy the binary uploaded by the GitHub workflow
       copy:
         src: /home/mmoinsweeper/{{ service_name }}  # /home/mmoinsweeper/mmoinsweeper-<branch>
+        remote_src: yes
         dest: /usr/local/bin/{{ service_name }}  # /usr/local/bin/mmoinsweeper-<branch>
         mode: '0755'
         owner: root
